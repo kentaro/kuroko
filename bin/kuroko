@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require 'kuroko'
+require 'optparse'
+
+opt = OptionParser.new
+
+opt.on "-c VAL" do |file|
+  Kuroko.run(file)
+end
+
+opt.parse! ARGV
