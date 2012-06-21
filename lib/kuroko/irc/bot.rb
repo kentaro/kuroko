@@ -16,18 +16,22 @@ module Kuroko
 
       match /add (.+)/, method: :add
       def add(message, url)
-        if bot.observer.has_feed?(message.channel, url)
+        channel = message.channel.instance_variable_get(:@name)
+
+        if bot.observer.has_feed?(channel, url)
           message.reply("Already exists: #{url}")
         else
-          bot.observer.add_feed(message.channel, url)
+          bot.observer.add_feed(channel, url)
           message.reply "Added: #{url}"
         end
       end
 
       match /del (.+)/, method: :del
       def del(message, url)
-        if bot.observer.has_feed?(message.channel, url)
-          bot.observer.delete_feed(message.channel, url)
+        channel = message.channel.instance_variable_get(:@name)
+
+        if bot.observer.has_feed?(channel, url)
+          bot.observer.delete_feed(channel, url)
           message.reply("Deleted: #{url}")
         else
           message.reply("No such feed: #{url}")
@@ -36,8 +40,10 @@ module Kuroko
 
       match /list/, method: :list
       def list(message)
-        if bot.observer.feeds_for(message.channel).any?
-          bot.observer.feeds(message.channel).each do |feed|
+        channel = message.channel.instance_variable_get(:@name)
+
+        if bot.observer.feeds_for(channel).any?
+          bot.observer.feeds(channel).each do |feed|
             message.reply(feed[:url])
           end
         else

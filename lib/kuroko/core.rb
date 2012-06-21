@@ -10,7 +10,7 @@ module Kuroko
     attr_reader :config, :feeds
 
     def initialize(file)
-      # @config = ::Kuroko::Config.new_from_file(file)
+      @config     = Config.load(file)
       @irc        = IRC::Client.new(self)
       @httpd      = HTTPD.new(self)
       @aggregator = Aggregator.new(self)

@@ -48,7 +48,7 @@ module Kuroko
           aggregate(feeds)
         end
 
-        sleep 10
+        sleep @observer.config['aggregator']['interval']
       end
     end
   end

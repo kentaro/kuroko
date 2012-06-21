@@ -1,32 +1,33 @@
-require 'kuroko/irc/bot'
 require 'cinch/helpers'
+require 'kuroko/irc/bot'
 
 module Kuroko
   module IRC
     class Client
       include Cinch::Helpers
+      attr_reader :bot
 
       def initialize(observer)
         @observer = observer
-        @bot      = Bot.new(observer) do
-          configure do |c|
-            c.server          = "irc.freenode.org"
-            c.nick            = 'kuroko'
-            c.channels        = ["#antipop"]
-            c.plugins.plugins = [Handler]
-          end
-        end
+        @bot      = Bot.new(observer)
+
+        @bot.config.server          = @observer.config['irc']['server']
+        @bot.config.nick            = @observer.config['irc']['nick']
+        @bot.config.channels        = @observer.config['irc']['channels']
+        @bot.config.plugins.plugins = [Handler]
       end
 
       def notify(message)
+        channel = Channel(message[:channel])
+
         if @bot.channels.include?(message[:channel])
-          if (message[:type] =~ /(privmsg|notice)/i)
-            Channel(message[:channel]).safe_msg(
+          if message[:type] =~ /privmsg|notice/i
+            channel.safe_msg(
               message[:message],
               message[:type] =~ /notice/i
             )
           else
-            @bot.irc.send("#{message[:type]} #{message[:channel]}")
+            channel.__send__(message[:type].downcase)
           end
         end
       end
